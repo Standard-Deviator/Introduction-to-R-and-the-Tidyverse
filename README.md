@@ -3,7 +3,7 @@
 Welcome to the Tidyverse,
 
 1. Ensure that both R and RStudio have been installed on your computer.
-2. Download and extract the course resources as a .zip file via the green Clone/Download button.
+2. Download and extract the course resources as a .zip file via the green "Clone or download" button.
 3. Double-click the Introduction-to-R-and-the-Tidyverse.RProj file to launch RStudio
 4. Install the "learnr" and the "tidyverse" packages.
 
