@@ -1,0 +1,635 @@
+---
+title: "Introduction to R & the Tidyverse"
+output:
+    learnr::tutorial:
+    progressive: true
+    allow_skip: FALSE
+runtime: shiny_prerendered
+---
+<!-- Import CSS -->
+<head>
+  <link rel="stylesheet" type="text/css" href="css/tidyverse.css">
+</head>
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+``` {r install_packages, warning = FALSE, message = FALSE}
+# create a vector of package names I want to install and load
+list.of.packages <- c("caTools","bitops","learnr","tidyverse")
+
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+library(tidyverse)
+```
+
+## What is R?
+
+R is an open source language and environment for statistical computing and graphics.
+
+It is both powerful and convenient. As of early September 2018, there were **13,002** packages on the Comprehensive R Archive Network (CRAN) with about **9,000,542** downloads in the first week of September alone.
+
+To show you how fast it is growing, in the week of April 18th, there were **14,086** packages available with about **19,322,957** downloads in that week alone. This doesn't even include private packages available on Github.
+
+It is syntax based, so you will need to code.
+
+## Getting Started with RStudio
+
+### Installing R and RStudio
+
+![](images\Rstudio_Logo.png){width=250px}
+
+Base R must be downloaded from the R website:
+http://cran.r-project.org/
+
+RStudio can be downloaded from its website:
+http://www.rstudio.com/
+
+I highly recommend this FREE book by Hadley Wickham and Garrett Grolemund. It is available online, and it is an excellent resource for learning R.
+http://r4ds.had.co.nz/
+
+![](images\cover.png){width=250px}
+
+### Rstudio Layout
+
+RStudio is fairly straightforward to navigate. It is broken down into four "panes": the Source editor, the Console, a pane showing the Environment/Files, and a pane for plots/packages/help documentation.
+
+The Source pane is where we type our code to run analyses, the results appear in the Console, and plots appear in the  plot pane.
+
+![](images\Rstudio.bmp){width=100%}
+
+## **Base R** - Atomic Types and Data Structures
+
+### Atomic Types
+
+There are 6 basic atomic types of data in R, though you probably will only use 4 of them.
+
+* complex - 4i
+* raw - bytes
+
+* logical - TRUE, FALSE
+* integer - 1, 4596, NA
+* numeric - 2, 4.67, pi
+* character - "hello", "world", "!"
+
+
+### Data Structures
+
+Data structures are ways which R stores data. Just like the name implies, a data structure tells us exactly how our data is structured or organized within R.
+
+R, like most programming languages, uses a variety of data structures. The most common of which are:
+
+ * **vectors**
+    + A series of data which must have the same atomic type.
+    + Vectors can be any of the basic atomic types.
+ * matrices
+    + Must be 2 dimensional
+    + Must be of the same atomic type
+ * arrays
+    + Similar to matrices, but they can be more than 2 dimensions
+ * list
+    + A list can have mixed atomic types, but they can be a bit trickier to use.
+ * **data frames**
+    + Used for tabular data, think of them as a basic spreadsheet, but each column is a vector.
+ * **tibble**
+    + Similar to data frames with a  few differences which we will cover later
+    + Tibbles are the standard data structures within the Tidyverse
+
+## **Base R** - Functions
+
+Everything we accomplish in R uses functions. Functions can import data, manipulate/clean our data, and export our data to use elsewhere. They are the fundamental building blocks within R.
+
+We can use functions by typing them directly into the Console pane or into script file.
+
+Here are a few of examples of mathematical functions in R:
+```{r scalar_functions, eval=FALSE, echo = TRUE}
+sqrt(9)
+exp(1)     # e^1
+log(10)    # log function with base of e
+log(10, base=exp(1))    # log function with base of e
+log(10, base=10)        # log function with base of 10
+factorial(3)            # 3!, factorial operator
+pi                      # pie = 3.1415....
+
+sqrt(2^2+5)             # Combination operation
+(8+6)/(8-1)             # bracket
+```
+
+But what good are functions if we can't save the results somewhere?
+
+## **Base R** - Creating Objects
+
+<div style = "float:right">
+![](images\shipping_container.png){width=250px}
+</div>
+
+In R, we "save" the results of a function inside an object.
+
+I like to think of it as saving the results inside of a container. It is immensely helpful to put **useful** labels on the container so that I can remember what is inside of the container later.
+
+It is also useful to know how everything inside of our container is organized. This can help us find specific items inside the container later. Data structures are the way we can tell how an object is organized internally.
+
+### Assignment Operator
+
+R uses a special operator for creating objects to hold our results: `<-`
+
+It frequently is read as the word "gets".
+
+```{r assignment_example, echo = TRUE, eval = FALSE}
+# This is a comment line, the "#" charactor tells R to ignore this line
+# We could read the following code as the object "example 1 results" gets the value of 2
+example_1_results <- 2
+```
+
+* Note: Some programmers use a single equal sign (`=`) as a substitute for the assignment operator. The reason I prefer `<-` is that it avoids ambiguous code later on.
+
+**R IS CASE SENSITIVE** - `a` is not the same object as `A`. You will save yourself a lot of frustration by following a few simple conventions.
+
+* As in the example above, use `#` to comment your code is highly recommended. Think of comments as little notes you are leaving for your future self. The better your comments, the easier it will be for you and others to understand your code.
+
+ * Always, pick object names that are meaningful. An object name should be a good hint about what results are saved inside an object. It is worth the time you spend now choosing an appropriate object name compared to the will likely spend later trying to figure out which object is which.
+ 
+ * Stick to lowercase letters to avoid problems with R's case sensitive nature.
+ 
+ * Use either snake_case or CamelCase format. It makes your code much easier to read. Whichever you choose, be CONSISTENT!
+
+```{r object_name_quiz}
+quiz(
+  question("Which object name do you think is the most appropriate?",
+    answer("variable_1"),
+    answer("a"),
+    answer("bunch_of_numbers"),
+    answer("anxiety", correct = TRUE),
+    allow_retry = TRUE,
+    type = "multiple"
+  ),
+  question("Which object name(s) do you think is(are) the most appropriate? [select all that apply]",
+    answer("A"),
+    answer("linear_model_results", correct = TRUE),
+    answer("LinearModelResults", correct = TRUE),
+    answer("number"),
+    allow_retry = TRUE,
+    type = "multiple"
+  )
+)
+```
+
+Once you have chosen a GOOD descriptive name for your object, creating the object within R is easy.
+
+```{r gets_operator, echo = TRUE, eval = TRUE}
+example_1_results <- 2
+
+example_2_results <- 42
+```
+
+RStudio shows all of the objects you have created within your current session in the Environment Pane (Defaults to the top right).
+
+Now that we have made two objects, let's see what else R can do using these objects!
+
+## Base R - Operators
+
+### Mathematical Operators
+
+ * \+ is for addition
+ * \- is for subtraction
+ * \/ is for division
+ * \* is for multiplication
+ * \^ or \*\* is for exponentiation
+
+### Logical Operators
+
+For simple comparisons R uses the following operators. To examine the help documentation for these within R, simply type "?Comparison".
+
+ * \<  is for less than
+ * \> is for greater than
+ * \=\= is for equal to (BE CAREFUL NOT TO USE single =)
+  * \<\= is for less than OR equal to
+ * \>\= is for greater than or equal to
+ * \!\= NOT equal to
+ * %in% is to test for group membership
+ * is.na() is to test for NA (More on this later)
+ 
+ * \& is for AND to construct compound logical tests
+ * \| is for OR to construct compound logical tests
+ * \! is for NOT or negation, it inverts the test
+ * *xor* is used to test for exactly OR is TRUE
+ * *any()* can be used to make multiple comparisons and see if at least one is TRUE
+ * *all()* can be used to test that multiple comparisons are TRUE
+
+ 
+To use any of these operators we simply insert them in between two values or objects which we want to operate upon.
+E.g.:
+
+ * 2 + 4
+ * (2 + 4) > 6
+ * (2 + 4) == 6
+
+There are many more operators, but these basic operators will be used very frequently.
+
+Let's try them out!
+
+```{r operator_practice, exercise=TRUE, exercise.lines = 10}
+# Test which object is greater ex_1_results
+# or ex_2_results
+ex_1_results <- (34 + 10) / 11
+ex_2_results <- (43.5 *3 / 2)
+
+
+```
+
+Now lets put together what we have learned so far.
+
+Use R to calculate the following equation and assign the results to an object named *equation_1_result*.
+
+$$ equation\_1\_result = \frac{\sqrt{22^2+8}}{(3! + 1)(8\pi)}$$
+
+```{r exercise_1, exercise=TRUE, eval = TRUE}
+
+```
+
+
+```{r exercise_1-hint}
+# You will need the following functions
+# sqrt()
+# factorial()
+# and the number pi
+```
+
+## Base R - Vectors
+
+Vectors are a very common data structure. Quite often, you might need to create your own vectors to help with an analysis.
+
+```{r vector_intro, eval = TRUE, echo = TRUE}
+# initialize vector with unknown length
+default_vector_example <- vector()
+
+# Check the class or type of object
+class(default_vector_example)
+
+# or use the is_* functions from the purr package
+is_vector(default_vector_example)
+
+# check the length of the object
+length(default_vector_example)
+
+# override the defaults
+vector(mode = "character", length = 10)
+```
+
+The *combine* function is perhaps the easiest way to create a vector. It will automatically determine the atomic type of the vector based on your data/arguments.
+
+Here is an example of the *combine* function:
+```{r vector_intro_2, eval=FALSE, echo=TRUE}
+>c(1,2,3,4,5)
+```
+
+```{r vector_intro_2b, eval=TRUE, echo=FALSE}
+c(1,2,3,4,5)
+```
+
+There are also many shortcuts and functions we can use in R to create vectors.
+
+``` {r vector_intro_3, eval=TRUE, echo=TRUE}
+# create a vector of consecutive integer
+(vec_1 <- 1:10)
+(vec_2 <- 11:13)
+
+# we can create a sequence of numbers using the "seq" function
+seq(from = 1, to = 5, by = 2)
+
+# we can create a sequence of a certain length with equal spacing
+seq(from = 1, to = 5, length.out = 6)
+
+# we can also repeat a number
+rep(3, times = 5)
+
+# we can repeat a vector a certain amount of times
+rep(vec_2, time = 2)
+
+# we can repeat each element in a vector a certain amount of times
+rep(vec_2, each = 2)
+```
+
+We can also combine vectors using the combine function, but keep in mind that the most complex type wins!
+
+```{r combine_vectors, eval = TRUE, echo = TRUE}
+# we can combine two vectors using the combine function
+integer_vec <- 2L
+logical_vec <- TRUE
+double_vec <- 2.4
+character_vec <- "H"
+
+# use the "class" function to check the atomic type
+class(c(logical_vec, integer_vec))
+class(c(integer_vec,double_vec))
+class(c(double_vec,character_vec))
+```
+
+Let's try some of these out!
+
+## Vector Practice
+
+Create a vector using the following data: 3, 5, 3, 4, 6, 5, 1, 8, 3, 2, 4, 5, 3, 6, 4, 2, 4
+``` {r vector_practice_q1, exercise=TRUE, eval = TRUE, exercise.lines =4}
+
+```
+
+``` {r vector_practice_q1-hint, eval = FALSE}
+# Use the combine function c()
+```
+
+Create a vector containing every even number between in 1:20
+``` {r vector_practice_q2, exercise=TRUE, eval = TRUE, exercise.lines = 4}
+
+```
+
+``` {r vector_practice_q2-hint, eval = FALSE}
+# Use the seq() function, don't forget about the "by" argument
+```
+
+Create a character vector which has 4 "females" and 3 "males"
+``` {r vector_practice_q3, exercise=TRUE, eval = TRUE, exercise.lines =4}
+
+```
+
+``` {r vector_practice_q3-hint, eval = FALSE}
+# create a vector of the data you want to repeat: c("females","males")
+# create a second vector with integers for how many times to repeat each element in our first vector
+# don't forget to pass the second vector as the "times" argument
+```
+
+## Vector Type Coersion
+
+### Explicit Coersion
+
+If we have an vector of a particular atomic type, but we want to convert it to another type, then we can use explicit coercion functions.
+
+* as.integer()
+* as.double()
+* as.character()
+* etc.
+
+**ALWAYS** check your vector after a coercion to ensure R is doing what you think you told it to do.
+
+```{r explicit_conversion, eval = TRUE, echo = TRUE}
+vec_1 <- c("three","0","5", "TRUE")
+as.integer(vec_1)
+as.double(vec_1)
+as.logical(vec_1)
+```
+
+
+### Implicit Coercion
+
+R tries to be helpful when we do operations on vectors (or other data structures) by using coercion to convert a vector of one atomic type to become compatible with another.
+
+For instance, if we create a vector as follows:
+
+``` {r coersion_1, eval = TRUE, echo = TRUE}
+# create integer vector
+(vec_1 <- 1:5)
+
+# create a logical vector
+(vec_greater_than_3 <- vec_1 > 3)
+
+# implicitly convert the logical vector into an numeric vector
+sum(vec_greater_than_3)
+
+# We can explicitly convert our logical vector to see how R find the result of "sum(vec_greater_than_3)"
+as.integer(vec_greater_than_3)
+```
+
+## Vector Operations and Recycling
+
+Most of the base mathematical and logical operators we discussed earlier can be used on vectors.
+
+For instance:
+```{r vector_operations_1, eval = TRUE, echo = TRUE}
+# add two vectors of the same length
+c(1,2,3) + c(1,2,3)
+```
+
+We can also perform a single operation on all elements of a vector.
+
+```{r vector_operations_2, eval = TRUE, echo = TRUE}
+# add a "constant" to a vector
+c(1,2,3) + 3
+```
+
+Behind the scenes R takes the value "3" and creates another vector of the same length as the first vector and sequentially goes through the whole vector performing the operation we told it to do.
+
+But, we need to be careful of "recycling". If we try to perform any operation using two vectors which are not the same length (and longer than 1), then recycling can occur.
+
+```{r vector_operations_3, eval = TRUE, echo = TRUE}
+# add two vectors of different lengths
+c(1,2,3,4) + c(1,2)
+
+# add two vectors of different lengths and the shorter length is not
+# a multiple of the longer length
+c(1,2,3,4) + c(1,2,3)
+```
+
+R silently recycles vectors for us. If we are always dealing with vectors of the same length or a length of one, then this will never be a problem for us.
+
+## Vector Subsetting
+
+The last aspect of vectors that needs to be highlighted is subsetting.
+
+Subsetting a vector uses a syntax we have not seen yet, brackets [ ].
+
+There are four ways we can subset a vector, but we will focus on just the two most common ways of subsetting a vector.
+
+* Use a numeric vector which is either all positive, all negative, or zero.
+
+```{r subsetting, exercise =TRUE}
+vec_1 <- c("a","b","c","d","e")
+
+```
+
+```{r subsetting-hint}
+# positive integers
+vec_1[c(1,3,5)]
+# negative integers
+vec_1[c(-3)]
+# repeat elements
+vec_1[c(4,5,5,4)]
+# change order
+vec_1[c(5,4,3,2,1)]
+# element number 6
+vec_1[c(6)]
+```
+
+* Use a logical vector to keep all elements that evaluate as TRUE.
+```{r subsetting_2, eval = TRUE, echo = TRUE}
+vec_1 <- c("a","b", NA, "c","d")
+
+# create a subet of all elements which equal "a"
+vec_1[vec_1 == "a"]
+
+# create a subset of all non-missing elements
+vec_1[!is.na(vec_1)]
+```
+
+## Matrices
+
+Matrices are another common data-structure, but we won't spend a lot of time on them in this course.
+
+A matrix is a 2 dimensional object, and every element MUST be of the same atomic type.
+
+We can initialize an matrix of zeroes with known dimension with the matrix function.
+
+```{r matrix_1, eval = TRUE, echo = TRUE}
+matrix(data = 0, nrow =2, ncol = 3, byrow = TRUE)
+```
+
+If we have a vector which we want to convert into a matrix, we simply pass it to the data argument.
+
+```{r matrix_2, eval = TRUE, echo = TRUE}
+vec_1 <- 1:20
+
+# If we want to fill the rows first
+matrix(data = vec_1, nrow = 4, ncol = 5, byrow = TRUE)
+
+# If we want to fill the columns first
+matrix(data = vec_1, nrow = 4, ncol = 5, byrow = FALSE)
+
+# Be aware of recycling!
+matrix(data = vec_1, nrow = 5, ncol = 5, byrow = TRUE)
+```
+
+We can perform matrix operations similar to how we do it with vectors, but we can also perform some new operations as well!
+
+```{r matrix_3, eval = TRUE, echo = TRUE}
+mat_1 <- matrix(data = 1:8, nrow = 2, ncol = 4, byrow = TRUE)
+mat_2 <- matrix(data = 2, nrow = 2, ncol = 4, byrow = TRUE)
+
+# Add one to each element  of mat_1
+mat_1 + 1
+
+# perform element-wise operations using both matrices
+mat_1 - mat_2
+mat_1 * mat_2
+
+# we can transpose a matrix using the function t()
+t(mat_2)
+
+# matrix multiplication uses a special operator
+mat_1 %*% t(mat_2)
+
+# subsetting using the bracket notation
+# [row, columns]
+mat_1[1,c(2,3)]
+
+# If we want everything in a certain dimension, we leave it blank
+# This is how we subset ALL rows, but only the columns 1, 2, and 3
+mat_1[,c(1,2,3)]
+```
+
+Here are a few other helpful functions for vectors/matrices:
+
+* cbind(mat_1,mat_2)
+    + combine matrices(vectors) horizontally. Returns a matrix.
+* rbind(mat_1,mat_2)
+    + combine matrices(vectors) vertically. Returns a matrix.
+* rowMeans(mat_1)
+    + returns vector of row means.
+* rowSums(mat_1)
+    + returns vector of row sums.
+* colMeans(mat_1)
+    + returns vector of column means.
+* colSums(mat_1)
+    + returns vector of column sums.
+* sum(mat_1)
+    + returns value of elements sum of a matrix
+* sum(v1)
+    + returns values of elements sum of a vector
+
+## Data.frames
+
+Data.frames are one of the most common data structures. The best way to think of them is like a "spreadsheet"", and each column in the "spreadsheet" is a vector. Remember that all elements or "cells" in a vector must have the same atomic type, but we can have vectors of different atomic types in our data.frames. Strictly speaking, a data.frame is a list of vectors which allows for much more flexible data management than a matrix or an array.
+
+### Creeating Data.frames
+
+To create a data.frame, we can combine vectors of the same length (be careful of recycling) together and give them meaningful names.
+
+```{r data_frame_example, eval = TRUE, echo = TRUE}
+dat <- data.frame(student_id = c(1,2,3,4,5,6),
+           grade = c(67,10,90,82,17,0),
+           first_name = c("John","Mary",
+                          "Ahmed","Paul",
+                          "Art",NA))
+
+dat
+```
+
+More often than not, we will import our data, and store it as a data.frame. We will cover this more soon.
+
+### Subsetting Data.frames
+
+Subsetting a data.frame is similar to subsetting a vector or matrix. We can use "[ , ]" (remember that data.frames are 2 dimensional objects), or the other subsetting operator "$" can subset a single column by name.
+
+```{r data_frame_example_2, eval = TRUE, echo = TRUE}
+# subset the first row, but keep all of the columns
+dat[1,]
+
+# keep only the third column, but keep all of the rows
+dat[,3]
+
+# subset only grades
+dat$grade
+
+# keep all columns for the rows with a grade > 60
+dat[dat$grade > 50,]
+
+# remove student id
+dat[,-1]
+```
+
+The problem with subsetting using indices is that if we ever rearrange the columns or rows, then R will keep doing the operations we told it to do. It doesn't know there is an error.
+
+There is another feature/error that can occur when subsetting a data.frame called partial name matching.
+
+Lets use our student data we just created. What would happen if we ran the following line of code?
+
+```{r data_frame, eval = FALSE, echo = TRUE}
+dat$gr
+```
+
+```{r data_frame_quiz}
+quiz(
+  question("What will be the result of running the above code?",
+    answer("An error"),
+    answer("A NULL vector"),
+    answer("A vector of student ids"),
+    answer("A vector of student grades", correct = TRUE),
+    answer("A vector of student first names"),
+    answer("Nothing"),
+    allow_retry = TRUE
+  )
+)
+```
+
+
+```{r data_frame_demo, exercise = TRUE, exercise.lines = 4}
+dat$gr
+```
+
+There are better and more robust ways of subsetting.
+
+## Packages
+
+When you first install base R, a variety of packages are installed and pre-loaded for us to use. Using base R we can do everything from importing data, to running analyses, and producing high quality graphics.
+
+Packages contain functions, datasets, help documentation, and often there are vignettes included to teach users how to use functions with a package.
+
+To show how to install packages, we will switch over to RStudio.
+
+## Code Demonstration
+
+```{r code_demo, exercise = TRUE, exercise.lines = 20}
+
+```
+
