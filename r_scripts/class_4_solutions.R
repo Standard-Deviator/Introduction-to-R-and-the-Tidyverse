@@ -1,0 +1,203 @@
+library(tidyverse)
+
+# Creating Functions ------------------------------------------------------
+
+## Each function needs a name, arguments, body
+## The last staement evaluated is returned as the result
+
+get_mean <- function(num_vec) {
+  # calculate the mean of a vector
+  sum(num_vec) / length(num_vec)
+}
+
+# Try it out!
+get_mean(c(23,45,91))
+
+# Creating Better Functions -----------------------------------------------
+
+get_mean <- function(num_vec) {
+    # check that num_vec is a numeric vector
+    if (!is.numeric(num_vec)) {
+        stop(paste("num_vec is of type ", class(num_vec),", but it should be a numeric or integer vector."))
+    }
+  
+  # Check that num_vec is not empty
+  if (length(num_vec) == 0) {
+    stop("num_vec cannot be empty")
+  }
+  
+  # If there are any NA values, then return NA otherwise compute mean
+  if (sum(is.na(num_vec)) != 0){
+    return(NA)
+  } else {
+    return(sum(num_vec) / length(num_vec))
+  }
+  
+}
+
+# verify that our function is catching problems
+get_mean(c(23,45,91))
+get_mean(c(23L,45L,91L))
+get_mean(c("23",45,91))
+get_mean(c(TRUE))
+get_mean(c(23,NA,91))
+
+
+# ggplot2 -----------------------------------------------------------------
+# Building a plot from the ground up!
+
+# import our superhero data
+superhero_data <- read_csv("data/heroes_information.csv",
+                          na = c("", "NA", "-")) %>%
+  mutate_if(is.numeric, .funs = na_if, y = -99) %>%
+  rename(Id = X1)
+
+# initialize a plot, what happens?
+ggplot(data = superhero_data)
+
+# Now let's tell ggplot how to "map" our data onto our canvas
+# How does this change our plot?
+ggplot(data = superhero_data, mapping = aes(x = Weight, y = Height))
+
+# Try adding a geom layer of points
+# Each new layer appears after the initial ggplot() function,
+# also remember that each geom_* layer is a function which can take it's own
+# arguments!
+ggplot(data = superhero_data, mapping = aes(x = Weight, y = Height)) +
+  geom_point()
+
+# Let's try adding two more geom_smooth layer: one with a besting fitting line
+ggplot(data = superhero_data, mapping = aes(x = Weight, y = Height)) +
+  geom_point() +
+    geom_smooth(method = "lm")
+
+
+# What else can we do to improve this plot? Color? Remove outliers?
+graph_data <- superhero_data %>%
+    filter(Height < 500)
+
+  ggplot(data = graph_data, mapping = aes(x = Weight, y = Height)) +
+  geom_point(color = "black") +
+  geom_smooth(method = "lm") +
+  labs(title = "Superhero Weights and Heights")
+
+
+# ggplot2 Histogram -------------------------------------------------------
+
+# The default settings for geom_hist make it hard to paint a picture of superhero Height by Gender
+# - Do we want NA values?
+# - What position adjustment can we make
+# - Can we add color to make the different Genders "pop" out more?
+# - What about changing the number of bins?
+graph_data <- graph_data %>%
+      filter(!is.na(Gender))
+  
+ggplot(graph_data, aes(x = Height, fill = Gender)) +
+  geom_histogram(position = position_dodge(), bins = 10)
+
+# example of jittering
+ggplot(superhero_data, aes(x = Alignment, y = Height)) +
+  geom_point(aes(color = Alignment), position = position_jitter(width = .3))
+
+# ggplot2 Faceting --------------------------------------------------------
+
+# turn this scatterplot into a series of scatterplots using Alginment for the columns and Gender for the rows
+# How else can we clean up this plot
+ggplot(superhero_data, aes(x = Weight, y = Height)) +
+  geom_point() +
+  facet_grid(Alignment~Gender)
+
+# reorder levels of Alignment
+graph_data <- superhero_data %>%
+  mutate(Alignment = fct_relevel(Alignment,"good","neutral","bad"))
+
+  ggplot(data = graph_data, aes(x = Weight, y = Height)) +
+  geom_point() +
+  facet_grid(Alignment~Gender) +
+  theme(axis.text.x=element_text(angle=50, size=20, vjust=0.5))
+
+
+# ggplot2 Labels ----------------------------------------------------------
+
+# One way to add a main title, now try changing the x and y axes labels
+ggplot(data = superhero_data, aes(x = Weight,  y = Height)) +
+  geom_point() +
+  labs(title = "Superhero Heights and Weights",
+       x = "Weight (lbs)",
+       y = "Height (cm)")
+
+
+# ggplot2 Themes ----------------------------------------------------------
+
+ggplot(data = superhero_data, aes(x = Weight,  y = Height)) +
+  geom_point() +
+  labs(title = "Superhero Heights and Weights",
+       x = "Weight (lbs)",
+       y = "Height (cms)") + 
+  theme(plot.title = element_text(face = "bold", hjust = .5))
+                                                                                          
+
+# ggplot2 Saving plots ----------------------------------------------------
+
+# We can save a plot internally using the assignment operator "<-"
+superhero_height_weight <- ggplot(superhero_data, aes(x = Weight, y = Height))
+superhero_height_weight
+
+# We can add layers to our plot object directly using the "+" operator
+superhero_height_weight <- superhero_height_weight +
+  geom_point()
+
+# Save the plot externally
+# - First create a directory to store your plots
+ggsave(filename = "plots/Superhero_Scatterplot.jpeg", plot = superhero_height_weight)
+
+
+
+# Let's have some fun creating plots using ggplot2
+
+# Let's try to illustrate variability in Height for superheroes
+
+# remove any heros with missing Height or name
+# get a random sample to make our plot more managable
+# create a new variable to keep track of which hero has above or below average height
+# sort the data by Height
+# convert name into a factor using the order of appearance in the data (to retain our sorting of Height)
+graph_data <- superhero_data %>%
+    filter(!is.na(Height),!is.na(name)) %>%
+    sample_n(size = 30,replace = FALSE) %>%
+    mutate(Height_above_below = if_else(Height >= mean(Height),
+                                        "Above Average",
+                                        "Below Average"),
+           Height_centered = Height - mean(Height)) %>%
+    arrange(Height_centered) %>%
+    mutate(name = fct_inorder(name)) %>%
+    select(name,Height,Height_above_below,Height_centered, Gender,Alignment)
+
+ggplot(graph_data, aes(x = name, y = Height_centered)) +
+    geom_col(aes(fill = Height_centered)) +
+    coord_flip()
+
+
+# Helpful Hints -----------------------------------------------------------
+
+
+# density
+superhero_data %>%
+  filter(!is.na(Gender), Height < 500) %>%
+  ggplot(aes(x = Height, color = Gender, fill = Gender)) +
+  geom_density(alpha = .5)
+
+# qqplot
+superhero_data %>%
+  filter(!is.na(Gender), Height < 500) %>%
+  ggplot() +
+  geom_qq(aes(sample = Height)) +
+  geom_qq_line(aes(sample = Height))
+
+## try playing around with the star wars dataset from the dplyr package or
+starwars_data <- starwars
+
+starwars_data <- starwars_data %>%
+    mutate(num_films = map_int(films, length),
+           num_vehicles = map_int(vehicles, length),
+           num_starships = map_int(starships, length))
