@@ -18,11 +18,6 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 ``` {r install_packages, warning = FALSE, message = FALSE}
-# create a vector of package names I want to install and load
-list.of.packages <- c("caTools","bitops","learnr","tidyverse")
-
-new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
 library(tidyverse)
 ```
 
@@ -602,7 +597,7 @@ dat$gr
 quiz(
   question("What will be the result of running the above code?",
     answer("An error"),
-    answer("A NULL vector"),
+    answer("NULL"),
     answer("A vector of student ids"),
     answer("A vector of student grades", correct = TRUE),
     answer("A vector of student first names"),
