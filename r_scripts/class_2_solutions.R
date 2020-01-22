@@ -24,6 +24,18 @@ data_wide_gathered <- spread(data_long,
                              key = "condition",
                              value = "anxiety")
 
+#################   pivot_longer   #################    
+# next we are going to do something conceptually similar to gather(), but
+# with a bit of added complexity
+# begin by importing data_wide_repeated_measures.csv
+data_wide_repeated <- read_csv("data/data_wide_repeated_measures.csv")
+
+data_long_repeated <- pivot_longer(data = data_wide_repeated,
+                                   names_to = c("stress_level","math_difficulty"),
+                                   names_sep = "_",
+                                   values_to = "correct_answers",
+                                   cols = contains(match = "_"))
+
 #################   Into to the dplyr package   #################
 
 # import data from the the "data" folder within our R project
