@@ -1,5 +1,9 @@
 ---
 title: "Introduction to R & the Tidyverse"
+author:
+  affiliation: York University
+  email: madkins@yorku
+  name: Mark Adkins
 output:
     learnr::tutorial:
     progressive: true
@@ -11,14 +15,10 @@ runtime: shiny_prerendered
   <link rel="stylesheet" type="text/css" href="css/tidyverse.css">
 </head>
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message = FALSE}
 library(learnr)
-knitr::opts_chunk$set(echo = FALSE)
-```
-
-
-``` {r install_packages, warning = FALSE, message = FALSE}
 library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## What is R?
@@ -28,6 +28,8 @@ R is an open source language and environment for statistical computing and graph
 It is both powerful and convenient. As of early September 2018, there were **13,002** packages on the Comprehensive R Archive Network (CRAN) with about **9,000,542** downloads in the first week of September alone.
 
 To show you how fast it is growing, in the week of April 18th, there were **14,086** packages available with about **19,322,957** downloads in that week alone. This doesn't even include private packages available on Github.
+
+As of October 1st 2019, there were **14,990** packages on CRAN, with about **27,219,409** downloads in that week alone.
 
 It is syntax based, so you will need to code.
 
