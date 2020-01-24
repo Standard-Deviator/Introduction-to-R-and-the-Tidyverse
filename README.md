@@ -11,4 +11,6 @@ Welcome to the Tidyverse,
 If you are using a lab computer, you only need to download the course resources.
 If you are using a personal laptop, ensure that you have a updated version of R and RStudio installed.
 
+For the first class, go to the following website: https://standard-deviator.shinyapps.io/Class_1/
+
 Good luck, and I look forward to meeting you all tomorrow!
